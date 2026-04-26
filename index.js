@@ -69,7 +69,8 @@ app.post('/talk', upload.single('audio'), async (req, res) => {
     );
 
     const buffer = Buffer.from(await audioResponse.arrayBuffer());
-    fs.writeFileSync('public/reply.mp3', buffer);
+    const path = require('path');
+fs.writeFileSync(path.join(__dirname, 'public', 'reply.mp3'), buffer);
 
     // حذف الملف المؤقت
     fs.unlinkSync(req.file.path);
