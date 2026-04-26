@@ -53,24 +53,14 @@ app.post('/talk', upload.single('audio'), async (req, res) => {
     console.log('رد الوالد:', replyText);
 
     // الخطوة 3: ElevenLabs يحول لصوت
-    const audioResponse = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${process.env.ELEVENLABS_VOICE_ID}`,
-      {
-        method: 'POST',
-        headers: {
-          'xi-api-key': process.env.ELEVENLABS_API_KEY,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          text: replyText,
-          model_id: 'eleven_multilingual_v2'
-        })
-      }
-    );
+    const ttsResponse = await openai.audio.speech.create({
+  model: 'playai-tts-arabic',
+  voice: 'Nasser',
+  input: replyText,
+});
 
-    const buffer = Buffer.from(await audioResponse.arrayBuffer());
+const buffer = Buffer.from(await ttsResponse.arrayBuffer());
 fs.unlinkSync(req.file.path);
-res.set('Content-Type', 'audio/mpeg');
 res.json({ text: replyText, audio: 'data:audio/mpeg;base64,' + buffer.toString('base64') });
 
   } catch (err) {
