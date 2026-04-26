@@ -54,8 +54,8 @@ app.post('/talk', upload.single('audio'), async (req, res) => {
 
     // الخطوة 3: ElevenLabs يحول لصوت
     const ttsResponse = await openai.audio.speech.create({
-  model: 'playai-tts-arabic',
-  voice: 'Nasser',
+  model: 'playai-tts-arabic-v2',
+voice: 'Nasser-PlayAI',
   input: replyText,
 });
 
