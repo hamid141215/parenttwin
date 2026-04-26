@@ -16,8 +16,7 @@ const openai = new OpenAI({
   baseURL: 'https://api.groq.com/openai/v1' 
 });
 
-app.use(express.static('public'));
-
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.post('/talk', upload.single('audio'), async (req, res) => {
   try {
     // الخطوة 1: Whisper يسمع الطفل
@@ -38,12 +37,12 @@ app.post('/talk', upload.single('audio'), async (req, res) => {
           role: 'system',
           content: `أنت والد عربي محب اسمك محمد.
 تتحدث مع ابنك يوسف عمره سنتان.
-- تكلم العربية فقط
+- تكلم العربية الفصحى البسيطة فقط
 - جملك قصيرة جداً: 3-5 كلمات فقط
 - دافئ وحنون دائماً
 - تناديه: حبيبي أو يا قمر
-- ممنوع أي إعلان أو رابط أو نصيحة خارجية
-- ردك يجب أن يكون جملة واحدة فقط`
+- ممنوع أي إعلان أو رابط أو نصيحة
+- ردك جملة واحدة فقط بدون أي رموز أو علامات خاصة`
         },
         { role: 'user', content: childText }
       ]
