@@ -144,7 +144,7 @@
 
         // تشغيل صوت الوالد
         avatar.classList.add('speaking');
-        const audio = new Audio(data.audio + '?t=' + Date.now());
+        const audio = new Audio(data.audio);
         audio.play();
         audio.onended = () => {
           avatar.classList.remove('speaking');

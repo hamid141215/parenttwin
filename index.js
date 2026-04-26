@@ -69,13 +69,9 @@ app.post('/talk', upload.single('audio'), async (req, res) => {
     );
 
     const buffer = Buffer.from(await audioResponse.arrayBuffer());
-    const path = require('path');
-fs.writeFileSync(path.join(__dirname, 'public', 'reply.mp3'), buffer);
-
-    // حذف الملف المؤقت
-    fs.unlinkSync(req.file.path);
-
-    res.json({ text: replyText, audio: '/reply.mp3' });
+fs.unlinkSync(req.file.path);
+res.set('Content-Type', 'audio/mpeg');
+res.json({ text: replyText, audio: 'data:audio/mpeg;base64,' + buffer.toString('base64') });
 
   } catch (err) {
     console.error(err);
