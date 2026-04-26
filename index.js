@@ -53,10 +53,11 @@ app.post('/talk', upload.single('audio'), async (req, res) => {
     console.log('رد الوالد:', replyText);
 
     // الخطوة 3: ElevenLabs يحول لصوت
-    const ttsResponse = await openai.audio.speech.create({
-  model: 'playai-tts-arabic-v2',
-voice: 'Nasser-PlayAI',
+    const ttsResponse = await groq.audio.speech.create({
+  model: 'canopylabs/orpheus-arabic-saudi',
+  voice: 'fahad',
   input: replyText,
+  response_format: 'wav'
 });
 
 const buffer = Buffer.from(await ttsResponse.arrayBuffer());
