@@ -69,6 +69,5 @@ res.json({ text: replyText, audio: 'data:audio/mpeg;base64,' + buffer.toString('
   }
 });
 
-app.listen(3000, () => {
-  console.log('✅ السيرفر يشتغل على: http://localhost:3000');
+app.listen(process.env.PORT || 3000, () => {  console.log('✅ السيرفر يشتغل على: http://localhost:3000');
 });
