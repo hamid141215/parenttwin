@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>ParentTwin</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1b2a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+  .screen {
+    width: 380px;
+    height: 680px;
+    background: #1a2a3a;
+    border-radius: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 50px 30px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  }
+  .parent-avatar {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    box-shadow: 0 0 0 0 rgba(102,126,234,0.5);
+    transition: box-shadow 0.3s;
+  }
+  .parent-avatar.speaking {
+    box-shadow: 0 0 0 20px rgba(102,126,234,0.2),
+                0 0 0 40px rgba(102,126,234,0.1);
+  }
+  .parent-name {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 16px;
+  }
+  .status {
+    font-size: 16px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 8px;
+    min-height: 24px;
+  }
+  .reply-text {
+    font-size: 18px;
+    color: #a5b4fc;
+    text-align: center;
+    min-height: 60px;
+    line-height: 1.6;
+  }
+  .talk-btn {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: none;
+    background: #22c55e;
+    font-size: 36px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 8px 24px rgba(34,197,94,0.4);
+  }
+  .talk-btn:active, .talk-btn.recording {
+    background: #ef4444;
+    transform: scale(1.1);
+    box-shadow: 0 8px 24px rgba(239,68,68,0.4);
+  }
+  .hint {
+    font-size: 13px;
+    color: rgba(255,255,255,0.3);
+  }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div style="text-align:center;">
+    <div class="parent-avatar" id="avatar">👨</div>
+    <div class="parent-name">بابا 💙</div>
+    <div class="status" id="status">اضغط للتكلم</div>
+  </div>
+
+  <div class="reply-text" id="replyText"></div>
+
+  <div style="text-align:center;">
+    <button class="talk-btn" id="talkBtn">🎤</button>
+    <div class="hint" style="margin-top:12px;">اضغط مع الكلام</div>
+  </div>
+</div>
+
+<script>
+  let mediaRecorder;
+  let chunks = [];
+  const btn = document.getElementById('talkBtn');
+  const status = document.getElementById('status');
+  const replyText = document.getElementById('replyText');
+  const avatar = document.getElementById('avatar');
+
+  btn.addEventListener('mousedown', startRecording);
+  btn.addEventListener('mouseup', stopRecording);
+  btn.addEventListener('touchstart', startRecording);
+  btn.addEventListener('touchend', stopRecording);
+
+  async function startRecording() {
+    chunks = [];
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => chunks.push(e.data);
+    mediaRecorder.start();
+    btn.classList.add('recording');
+    status.textContent = '🔴 يسمعك...';
+    replyText.textContent = '';
+  }
+
+  async function stopRecording() {
+    mediaRecorder.stop();
+    btn.classList.remove('recording');
+    status.textContent = '⏳ بابا يفكر...';
+
+    mediaRecorder.onstop = async () => {
+      const blob = new Blob(chunks, { type: 'audio/webm' });
+      const formData = new FormData();
+      formData.append('audio', blob, 'audio.webm');
+
+      try {
+        const response = await fetch('/talk', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+        replyText.textContent = data.text;
+        status.textContent = '💬 بابا يتكلم...';
+
+        // تشغيل صوت الوالد
+        avatar.classList.add('speaking');
+        const audio = new Audio(data.audio + '?t=' + Date.now());
+        audio.play();
+        audio.onended = () => {
+          avatar.classList.remove('speaking');
+          status.textContent = 'اضغط للتكلم';
+        };
+      } catch(err) {
+        status.textContent = 'حدث خطأ، حاول مرة ثانية';
+      }
+    };
+  }
+</script>
+</body>
+</html> 
