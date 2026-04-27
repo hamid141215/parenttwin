@@ -6,6 +6,9 @@ const multer = require('multer');
 const OpenAI = require('openai');
 
 const app = express();
+const path = require('path');
+if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
+if (!fs.existsSync('public')) fs.mkdirSync('public');
 const storage = multer.diskStorage({
   destination: 'uploads/',
   filename: (req, file, cb) => cb(null, 'audio.webm')
