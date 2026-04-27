@@ -43,6 +43,20 @@ app.post('/setup', async (req, res) => {
   }
 });
 
+app.get('/family/:id', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('families')
+      .select('parent_name, child_name')
+      .eq('id', req.params.id)
+      .single();
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    res.status(404).json({ error: 'not found' });
+  }
+});
+
 app.post('/talk', upload.single('audio'), async (req, res) => {
   try {
     const familyId = req.query.family;
