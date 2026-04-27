@@ -2,130 +2,290 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ParentTwin</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    background: #0d1b2a;
+    background: linear-gradient(160deg, #0d1b2a 0%, #1a1a3e 100%);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     font-family: Arial, sans-serif;
     color: white;
   }
   .screen {
     width: 380px;
-    height: 680px;
-    background: #1a2a3a;
+    min-height: 680px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 50px 30px;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    padding: 50px 30px 40px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+  .top-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .brand {
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 1px;
+  }
+  .secure-tag {
+    font-size: 11px;
+    color: #22c55e;
+    background: rgba(34,197,94,0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(34,197,94,0.3);
+  }
+  .avatar-wrap {
+    position: relative;
+    margin-bottom: 8px;
   }
   .parent-avatar {
-    width: 180px;
-    height: 180px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
     background: linear-gradient(135deg, #667eea, #764ba2);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 80px;
-    box-shadow: 0 0 0 0 rgba(102,126,234,0.5);
-    transition: box-shadow 0.3s;
+    font-size: 72px;
+    transition: box-shadow 0.4s;
+    position: relative;
+    z-index: 2;
   }
   .parent-avatar.speaking {
-    box-shadow: 0 0 0 20px rgba(102,126,234,0.2),
-                0 0 0 40px rgba(102,126,234,0.1);
+    box-shadow: 0 0 0 16px rgba(102,126,234,0.15),
+                0 0 0 32px rgba(102,126,234,0.08),
+                0 0 0 48px rgba(102,126,234,0.04);
   }
+  .wave-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(102,126,234,0.4);
+    animation: wave-pulse 2s infinite;
+    opacity: 0;
+  }
+  .wave-ring:nth-child(2) { animation-delay: 0.5s; inset: -16px; }
+  .wave-ring:nth-child(3) { animation-delay: 1s; inset: -24px; }
+  @keyframes wave-pulse {
+    0% { opacity: 0.6; transform: scale(0.95); }
+    100% { opacity: 0; transform: scale(1.1); }
+  }
+  .speaking-indicator {
+    display: none;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: 2px solid #0d1b2a;
+    z-index: 3;
+  }
+  .speaking-indicator.active { display: flex; }
   .parent-name {
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 26px;
+    font-weight: 700;
     margin-top: 16px;
+    text-align: center;
+  }
+  .parent-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 4px;
   }
   .status {
-    font-size: 16px;
+    font-size: 15px;
     color: rgba(255,255,255,0.5);
-    margin-top: 8px;
     min-height: 24px;
+    text-align: center;
+    margin-top: 8px;
+  }
+  .reply-bubble {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 16px 20px;
+    width: 100%;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .reply-text {
-    font-size: 18px;
-    color: #a5b4fc;
+    font-size: 17px;
+    color: #c4b5fd;
     text-align: center;
-    min-height: 60px;
-    line-height: 1.6;
+    line-height: 1.7;
+  }
+  .controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
   }
   .talk-btn {
-    width: 90px;
-    height: 90px;
+    width: 86px;
+    height: 86px;
     border-radius: 50%;
     border: none;
-    background: #22c55e;
-    font-size: 36px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    font-size: 34px;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 8px 24px rgba(34,197,94,0.4);
+    box-shadow: 0 8px 28px rgba(34,197,94,0.4);
+    position: relative;
   }
-  .talk-btn:active, .talk-btn.recording {
-    background: #ef4444;
-    transform: scale(1.1);
-    box-shadow: 0 8px 24px rgba(239,68,68,0.4);
+  .talk-btn::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid rgba(34,197,94,0.3);
+    animation: btn-ring 2s infinite;
+  }
+  @keyframes btn-ring {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0; transform: scale(1.15); }
+  }
+  .talk-btn.recording {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    transform: scale(1.08);
+    box-shadow: 0 8px 28px rgba(239,68,68,0.5);
+  }
+  .talk-btn.recording::after {
+    border-color: rgba(239,68,68,0.4);
   }
   .hint {
+    font-size: 12px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.5px;
+  }
+  .sos-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: #ef4444;
+    padding: 8px 16px;
+    border-radius: 50px;
     font-size: 13px;
-    color: rgba(255,255,255,0.3);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .sos-btn:hover {
+    background: rgba(239,68,68,0.25);
   }
 </style>
 </head>
 <body>
+
+<button class="sos-btn" onclick="emergency()">🚨 طوارئ</button>
+
 <div class="screen">
-  <div style="text-align:center;">
-    <div class="parent-avatar" id="avatar">👨</div>
-    <div class="parent-name">بابا 💙</div>
+  <div class="top-bar">
+    <span class="brand">PARENTTWIN</span>
+    <span class="secure-tag">🔒 آمن</span>
+  </div>
+
+  <div style="text-align:center; width:100%;">
+    <div class="avatar-wrap">
+      <div class="wave-ring"></div>
+      <div class="wave-ring"></div>
+      <div class="wave-ring"></div>
+      <div class="parent-avatar" id="avatar">👨</div>
+      <div class="speaking-indicator" id="speakingDot">🔊</div>
+    </div>
+    <div class="parent-name" id="parentName">بابا 💙</div>
+    <div class="parent-subtitle" id="childGreeting">أهلاً يا صغير</div>
     <div class="status" id="status">اضغط للتكلم</div>
   </div>
 
-  <div class="reply-text" id="replyText"></div>
+  <div class="reply-bubble">
+    <div class="reply-text" id="replyText">...</div>
+  </div>
 
-  <div style="text-align:center;">
+  <div class="controls">
     <button class="talk-btn" id="talkBtn">🎤</button>
-    <div class="hint" style="margin-top:12px;">اضغط مع الكلام</div>
+    <div class="hint">اضغط مع الكلام واترك عند الانتهاء</div>
   </div>
 </div>
 
 <script>
+  // قراءة معلومات العائلة من الرابط
+  const familyId = new URLSearchParams(window.location.search).get('family');
+  const url = familyId ? `/talk?family=${familyId}` : '/talk';
+
+  // تحميل اسم الوالد من الـ API
+  if (familyId) {
+    fetch(`/family/${familyId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.parent_name) {
+          document.getElementById('parentName').textContent = data.parent_name + ' 💙';
+        }
+        if (data.child_name) {
+          document.getElementById('childGreeting').textContent = 'أهلاً ' + data.child_name;
+        }
+      }).catch(() => {});
+  }
+
   let mediaRecorder;
   let chunks = [];
   const btn = document.getElementById('talkBtn');
   const status = document.getElementById('status');
   const replyText = document.getElementById('replyText');
   const avatar = document.getElementById('avatar');
+  const speakingDot = document.getElementById('speakingDot');
 
   btn.addEventListener('mousedown', startRecording);
   btn.addEventListener('mouseup', stopRecording);
-  btn.addEventListener('touchstart', startRecording);
-  btn.addEventListener('touchend', stopRecording);
+  btn.addEventListener('touchstart', e => { e.preventDefault(); startRecording(); });
+  btn.addEventListener('touchend', e => { e.preventDefault(); stopRecording(); });
 
   async function startRecording() {
     chunks = [];
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = e => chunks.push(e.data);
-    mediaRecorder.start();
-    btn.classList.add('recording');
-    status.textContent = '🔴 يسمعك...';
-    replyText.textContent = '';
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e => chunks.push(e.data);
+      mediaRecorder.start();
+      btn.classList.add('recording');
+      btn.textContent = '⏹';
+      status.textContent = '🔴 يسمعك...';
+      replyText.textContent = '...';
+    } catch(err) {
+      status.textContent = 'يرجى السماح بالميكروفون';
+    }
   }
 
   async function stopRecording() {
+    if (!mediaRecorder) return;
     mediaRecorder.stop();
     btn.classList.remove('recording');
-    status.textContent = '⏳ بابا يفكر...';
+    btn.textContent = '🎤';
+    status.textContent = '⏳ يفكر...';
 
     mediaRecorder.onstop = async () => {
       const blob = new Blob(chunks, { type: 'audio/webm' });
@@ -133,28 +293,35 @@
       formData.append('audio', blob, 'audio.webm');
 
       try {
-        const response = await fetch('/talk', {
-          method: 'POST',
-          body: formData
-        });
-
+        const response = await fetch(url, { method: 'POST', body: formData });
         const data = await response.json();
-        replyText.textContent = data.text;
-        status.textContent = '💬 بابا يتكلم...';
 
-        // تشغيل صوت الوالد
+        replyText.textContent = data.text;
+        status.textContent = '💬 يتكلم...';
         avatar.classList.add('speaking');
+        speakingDot.classList.add('active');
+
         const audio = new Audio(data.audio);
         audio.play();
         audio.onended = () => {
           avatar.classList.remove('speaking');
+          speakingDot.classList.remove('active');
           status.textContent = 'اضغط للتكلم';
         };
       } catch(err) {
-        status.textContent = 'حدث خطأ، حاول مرة ثانية';
+        status.textContent = '⚠️ حدث خطأ، حاول مرة ثانية';
+        replyText.textContent = '...';
       }
     };
   }
+
+  function emergency() {
+    if (confirm('هل تريد الاتصال بالوالد الحقيقي؟')) {
+      status.textContent = '🚨 جارٍ الاتصال...';
+      fetch('/emergency?family=' + (familyId || ''))
+        .catch(() => {});
+    }
+  }
 </script>
 </body>
-</html> 
+</html>
