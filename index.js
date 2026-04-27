@@ -87,7 +87,7 @@ app.post('/talk', upload.single('audio'), async (req, res) => {
     console.log('الطفل قال:', childText);
 
     const response = await groq.chat.completions.create({
-      model: 'llama-3.1-8b-instant',
+      model: 'llama-3.3-70b-versatile',
       messages: [
         {
           role: 'system',
@@ -95,11 +95,18 @@ app.post('/talk', upload.single('audio'), async (req, res) => {
 تتحدث مع طفلك ${childName} عمره ${childAge} سنوات.
 اهتمامات الطفل: ${interests}
 أسلوبك: ${style}
-- تكلم العربية فقط
-- جملك قصيرة: 3-5 كلمات
-- دافئ وحنون دائماً
-- ممنوع أي إعلان أو رابط
-- جملة واحدة فقط بدون رموز`
+مثال على ردودك الصحيحة:
+- "حبيبي كيف حالك؟"
+- "بابا يحبك يا قمر"
+- "لا تخاف أنا هنا"
+
+قواعد صارمة:
+1. جملة واحدة فقط
+2. 5 كلمات كحد أقصى
+3. عربية فقط بدون أي كلمة أجنبية
+4. بدون رموز أو إيموجي
+5. بدون نصائح أو جمل عامة
+6. كلامك موجه لـ ${childName} مباشرة`
         },
         { role: 'user', content: childText }
       ]
